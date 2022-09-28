@@ -9,24 +9,24 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// DynamicCreate is the builder for creating a Dynamic entity.
-type DynamicCreate struct {
-	mutation *DynamicMutation
+// DCreate is the builder for creating a Dynamic entity.
+type DCreate struct {
+	mutation *DMutation
 }
 
 // SetCreatorID sets the "creator_id" field.
-func (du *DynamicCreate) SetValue(name string, val interface{}) *DynamicCreate {
+func (du *DCreate) SetValue(name string, val interface{}) *DCreate {
 	du.mutation.SetValue(name, val)
 	return du
 }
 
-// Mutation returns the DynamicMutation object of the builder.
-func (dc *DynamicCreate) Mutation() *DynamicMutation {
+// Mutation returns the DMutation object of the builder.
+func (dc *DCreate) Mutation() *DMutation {
 	return dc.mutation
 }
 
 // Save creates the Dynamic in the database.
-func (dc *DynamicCreate) Save(ctx context.Context) (*Dynamic, error) {
+func (dc *DCreate) Save(ctx context.Context) (*Dynamic, error) {
 	var (
 		err  error
 		node *Dynamic
@@ -43,7 +43,7 @@ func (dc *DynamicCreate) Save(ctx context.Context) (*Dynamic, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (dc *DynamicCreate) SaveX(ctx context.Context) *Dynamic {
+func (dc *DCreate) SaveX(ctx context.Context) *Dynamic {
 	v, err := dc.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -52,29 +52,29 @@ func (dc *DynamicCreate) SaveX(ctx context.Context) *Dynamic {
 }
 
 // Exec executes the query.
-func (dc *DynamicCreate) Exec(ctx context.Context) error {
+func (dc *DCreate) Exec(ctx context.Context) error {
 	_, err := dc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (dc *DynamicCreate) ExecX(ctx context.Context) {
+func (dc *DCreate) ExecX(ctx context.Context) {
 	if err := dc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (dc *DynamicCreate) defaults() error {
+func (dc *DCreate) defaults() error {
 	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (dc *DynamicCreate) check() error {
+func (dc *DCreate) check() error {
 	return nil
 }
 
-func (dc *DynamicCreate) sqlSave(ctx context.Context) (*Dynamic, error) {
+func (dc *DCreate) sqlSave(ctx context.Context) (*Dynamic, error) {
 	_node, _spec := dc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, dc.mutation.table.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -91,7 +91,7 @@ func (dc *DynamicCreate) sqlSave(ctx context.Context) (*Dynamic, error) {
 	return _node, nil
 }
 
-func (dc *DynamicCreate) createSpec() (*Dynamic, *sqlgraph.CreateSpec) {
+func (dc *DCreate) createSpec() (*Dynamic, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Dynamic{table: dc.mutation.table, Row: make(map[string]ent.Value)}
 		_spec = &sqlgraph.CreateSpec{
@@ -120,14 +120,14 @@ func (dc *DynamicCreate) createSpec() (*Dynamic, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// DynamicCreateBulk is the builder for creating many Dynamic entities in bulk.
-type DynamicCreateBulk struct {
+// DCreateBulk is the builder for creating many Dynamic entities in bulk.
+type DCreateBulk struct {
 	config
-	builders []*DynamicCreate
+	builders []*DCreate
 }
 
 // Save creates the Dynamic entities in the database.
-func (dcb *DynamicCreateBulk) Save(ctx context.Context) ([]*Dynamic, error) {
+func (dcb *DCreateBulk) Save(ctx context.Context) ([]*Dynamic, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(dcb.builders))
 	nodes := make([]*Dynamic, len(dcb.builders))
 	mutators := make([]Mutator, len(dcb.builders))
@@ -136,7 +136,7 @@ func (dcb *DynamicCreateBulk) Save(ctx context.Context) ([]*Dynamic, error) {
 			builder := dcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*DynamicMutation)
+				mutation, ok := m.(*DMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -180,7 +180,7 @@ func (dcb *DynamicCreateBulk) Save(ctx context.Context) ([]*Dynamic, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (dcb *DynamicCreateBulk) SaveX(ctx context.Context) []*Dynamic {
+func (dcb *DCreateBulk) SaveX(ctx context.Context) []*Dynamic {
 	v, err := dcb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -189,13 +189,13 @@ func (dcb *DynamicCreateBulk) SaveX(ctx context.Context) []*Dynamic {
 }
 
 // Exec executes the query.
-func (dcb *DynamicCreateBulk) Exec(ctx context.Context) error {
+func (dcb *DCreateBulk) Exec(ctx context.Context) error {
 	_, err := dcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (dcb *DynamicCreateBulk) ExecX(ctx context.Context) {
+func (dcb *DCreateBulk) ExecX(ctx context.Context) {
 	if err := dcb.Exec(ctx); err != nil {
 		panic(err)
 	}

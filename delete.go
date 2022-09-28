@@ -8,24 +8,24 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// DynamicDelete is the builder for deleting a Dynamic entity.
-type DynamicDelete struct {
-	mutation *DynamicMutation
+// DDelete is the builder for deleting a Dynamic entity.
+type DDelete struct {
+	mutation *DMutation
 }
 
-// Where appends a list predicates to the DynamicDelete builder.
-func (dd *DynamicDelete) Where(ps ...PredicateDynamic) *DynamicDelete {
+// Where appends a list predicates to the DDelete builder.
+func (dd *DDelete) Where(ps ...Predicate) *DDelete {
 	dd.mutation.Where(ps...)
 	return dd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (dd *DynamicDelete) Exec(ctx context.Context) (int, error) {
+func (dd *DDelete) Exec(ctx context.Context) (int, error) {
 	return dd.sqlExec(ctx)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (dd *DynamicDelete) ExecX(ctx context.Context) int {
+func (dd *DDelete) ExecX(ctx context.Context) int {
 	n, err := dd.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -33,7 +33,7 @@ func (dd *DynamicDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (dd *DynamicDelete) sqlExec(ctx context.Context) (int, error) {
+func (dd *DDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := &sqlgraph.DeleteSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table: dd.mutation.table.Name,
@@ -57,13 +57,13 @@ func (dd *DynamicDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// DynamicDeleteOne is the builder for deleting a single Dynamic entity.
-type DynamicDeleteOne struct {
-	dd *DynamicDelete
+// DDeleteOne is the builder for deleting a single Dynamic entity.
+type DDeleteOne struct {
+	dd *DDelete
 }
 
 // Exec executes the deletion query.
-func (ddo *DynamicDeleteOne) Exec(ctx context.Context) error {
+func (ddo *DDeleteOne) Exec(ctx context.Context) error {
 	n, err := ddo.dd.Exec(ctx)
 	switch {
 	case err != nil:
@@ -76,6 +76,6 @@ func (ddo *DynamicDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ddo *DynamicDeleteOne) ExecX(ctx context.Context) {
+func (ddo *DDeleteOne) ExecX(ctx context.Context) {
 	ddo.dd.ExecX(ctx)
 }

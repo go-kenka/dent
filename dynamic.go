@@ -72,14 +72,14 @@ func (d *Dynamic) assignValues(columns []string, values []interface{}) error {
 // // Update returns a builder for updating this Dynamic.
 // // Note that you need to call Dynamic.Unwrap() before calling this method if this Dynamic
 // // was returned from a transaction, and the transaction was committed or rolled back.
-func (d *Dynamic) Update() *DynamicUpdateOne {
+func (d *Dynamic) Update() *DUpdateOne {
 	return d.table.UpdateOne(d)
 }
 
 // // Update returns a builder for updating this Dynamic.
 // // Note that you need to call Dynamic.Unwrap() before calling this method if this Dynamic
 // // was returned from a transaction, and the transaction was committed or rolled back.
-func (d *Dynamic) Delete() *DynamicDeleteOne {
+func (d *Dynamic) Delete() *DDeleteOne {
 	return d.table.DeleteOneID(d.ID)
 }
 

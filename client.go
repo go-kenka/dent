@@ -143,51 +143,51 @@ func (c *Client) Table(table string) *Table {
 }
 
 // Create returns a builder for creating a Dynamic entity.
-func (c *Table) Create() *DynamicCreate {
-	mutation := newDynamicMutation(c.Clone(), OpCreate, withField(c.Columns...))
-	return &DynamicCreate{mutation: mutation}
+func (c *Table) Create() *DCreate {
+	mutation := newDMutation(c.Clone(), OpCreate, withField(c.Columns...))
+	return &DCreate{mutation: mutation}
 }
 
 // CreateBulk returns a builder for creating a bulk of Dynamic entities.
-func (c *Table) CreateBulk(builders ...*DynamicCreate) *DynamicCreateBulk {
-	return &DynamicCreateBulk{config: c.config, builders: builders}
+func (c *Table) CreateBulk(builders ...*DCreate) *DCreateBulk {
+	return &DCreateBulk{config: c.config, builders: builders}
 }
 
 // Update returns an update builder for Dynamic.
-func (c *Table) Update() *DynamicUpdate {
-	mutation := newDynamicMutation(c.Clone(), OpUpdate)
-	return &DynamicUpdate{mutation: mutation}
+func (c *Table) Update() *DUpdate {
+	mutation := newDMutation(c.Clone(), OpUpdate)
+	return &DUpdate{mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *Table) UpdateOne(d *Dynamic) *DynamicUpdateOne {
-	mutation := newDynamicMutation(c.Clone(), OpUpdateOne, withEntity(d))
-	return &DynamicUpdateOne{mutation: mutation}
+func (c *Table) UpdateOne(d *Dynamic) *DUpdateOne {
+	mutation := newDMutation(c.Clone(), OpUpdateOne, withEntity(d))
+	return &DUpdateOne{mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *Table) UpdateOneID(id int) *DynamicUpdateOne {
-	mutation := newDynamicMutation(c.Clone(), OpUpdateOne, withID(id))
-	return &DynamicUpdateOne{mutation: mutation}
+func (c *Table) UpdateOneID(id int) *DUpdateOne {
+	mutation := newDMutation(c.Clone(), OpUpdateOne, withID(id))
+	return &DUpdateOne{mutation: mutation}
 }
 
 // Delete returns a delete builder for Dynamic.
-func (c *Table) Delete() *DynamicDelete {
-	mutation := newDynamicMutation(c.Clone(), OpDelete, withField(c.Columns...))
-	return &DynamicDelete{mutation: mutation}
+func (c *Table) Delete() *DDelete {
+	mutation := newDMutation(c.Clone(), OpDelete, withField(c.Columns...))
+	return &DDelete{mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *Table) DeleteOneID(id int) *DynamicDeleteOne {
+func (c *Table) DeleteOneID(id int) *DDeleteOne {
 	builder := c.Delete().Where(ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &DynamicDeleteOne{builder}
+	return &DDeleteOne{builder}
 }
 
 // Query returns a query builder for Dynamic.
-func (c *Table) Query() *DynamicQuery {
-	return &DynamicQuery{
+func (c *Table) Query() *DQuery {
+	return &DQuery{
 		table:    c,
 		withData: make(map[string]*WithQuery),
 	}

@@ -10,42 +10,42 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// DynamicUpdate is the builder for updating Dynamic entities.
-type DynamicUpdate struct {
-	mutation *DynamicMutation
+// DUpdate is the builder for updating Dynamic entities.
+type DUpdate struct {
+	mutation *DMutation
 }
 
-// Where appends a list predicates to the DynamicUpdate builder.
-func (du *DynamicUpdate) Where(ps ...PredicateDynamic) *DynamicUpdate {
+// Where appends a list predicates to the DUpdate builder.
+func (du *DUpdate) Where(ps ...Predicate) *DUpdate {
 	du.mutation.Where(ps...)
 	return du
 }
 
 // SetCreatorID sets the "creator_id" field.
-func (du *DynamicUpdate) SetValue(name string, val interface{}) *DynamicUpdate {
+func (du *DUpdate) SetValue(name string, val interface{}) *DUpdate {
 	du.mutation.SetValue(name, val)
 	return du
 }
 
 // AddCreatorID adds i to the "creator_id" field.
-func (du *DynamicUpdate) AddValue(name string, i int) *DynamicUpdate {
+func (du *DUpdate) AddValue(name string, i int) *DUpdate {
 	du.mutation.AddValue(name, i)
 	return du
 }
 
 // ClearCreatorID clears the value of the "creator_id" field.
-func (du *DynamicUpdate) ClearValue(name string) *DynamicUpdate {
+func (du *DUpdate) ClearValue(name string) *DUpdate {
 	du.mutation.ClearValue(name)
 	return du
 }
 
-// Mutation returns the DynamicMutation object of the builder.
-func (du *DynamicUpdate) Mutation() *DynamicMutation {
+// Mutation returns the DMutation object of the builder.
+func (du *DUpdate) Mutation() *DMutation {
 	return du.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (du *DynamicUpdate) Save(ctx context.Context) (int, error) {
+func (du *DUpdate) Save(ctx context.Context) (int, error) {
 	if err := du.defaults(); err != nil {
 		return 0, err
 	}
@@ -53,7 +53,7 @@ func (du *DynamicUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (du *DynamicUpdate) SaveX(ctx context.Context) int {
+func (du *DUpdate) SaveX(ctx context.Context) int {
 	affected, err := du.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -62,24 +62,24 @@ func (du *DynamicUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (du *DynamicUpdate) Exec(ctx context.Context) error {
+func (du *DUpdate) Exec(ctx context.Context) error {
 	_, err := du.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (du *DynamicUpdate) ExecX(ctx context.Context) {
+func (du *DUpdate) ExecX(ctx context.Context) {
 	if err := du.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (du *DynamicUpdate) defaults() error {
+func (du *DUpdate) defaults() error {
 	return nil
 }
 
-func (du *DynamicUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (du *DUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   du.mutation.table.Name,
@@ -116,44 +116,44 @@ func (du *DynamicUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// DynamicUpdateOne is the builder for updating a single Dynamic entity.
-type DynamicUpdateOne struct {
+// DUpdateOne is the builder for updating a single Dynamic entity.
+type DUpdateOne struct {
 	fields   []string
-	mutation *DynamicMutation
+	mutation *DMutation
 }
 
 // SetCreatorID sets the "creator_id" field.
-func (duo *DynamicUpdateOne) SetValue(name string, val interface{}) *DynamicUpdateOne {
+func (duo *DUpdateOne) SetValue(name string, val interface{}) *DUpdateOne {
 	duo.mutation.SetValue(name, val)
 	return duo
 }
 
 // AddCreatorID adds i to the "creator_id" field.
-func (duo *DynamicUpdateOne) AddValue(name string, i int) *DynamicUpdateOne {
+func (duo *DUpdateOne) AddValue(name string, i int) *DUpdateOne {
 	duo.mutation.AddValue(name, i)
 	return duo
 }
 
 // ClearCreatorID clears the value of the "creator_id" field.
-func (duo *DynamicUpdateOne) ClearValue(name string) *DynamicUpdateOne {
+func (duo *DUpdateOne) ClearValue(name string) *DUpdateOne {
 	duo.mutation.ClearValue(name)
 	return duo
 }
 
-// Mutation returns the DynamicMutation object of the builder.
-func (duo *DynamicUpdateOne) Mutation() *DynamicMutation {
+// Mutation returns the DMutation object of the builder.
+func (duo *DUpdateOne) Mutation() *DMutation {
 	return duo.mutation
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (duo *DynamicUpdateOne) Select(field string, fields ...string) *DynamicUpdateOne {
+func (duo *DUpdateOne) Select(field string, fields ...string) *DUpdateOne {
 	duo.fields = append([]string{field}, fields...)
 	return duo
 }
 
 // Save executes the query and returns the updated Dynamic entity.
-func (duo *DynamicUpdateOne) Save(ctx context.Context) (*Dynamic, error) {
+func (duo *DUpdateOne) Save(ctx context.Context) (*Dynamic, error) {
 	if err := duo.defaults(); err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func (duo *DynamicUpdateOne) Save(ctx context.Context) (*Dynamic, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (duo *DynamicUpdateOne) SaveX(ctx context.Context) *Dynamic {
+func (duo *DUpdateOne) SaveX(ctx context.Context) *Dynamic {
 	node, err := duo.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -171,24 +171,24 @@ func (duo *DynamicUpdateOne) SaveX(ctx context.Context) *Dynamic {
 }
 
 // Exec executes the query on the entity.
-func (duo *DynamicUpdateOne) Exec(ctx context.Context) error {
+func (duo *DUpdateOne) Exec(ctx context.Context) error {
 	_, err := duo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (duo *DynamicUpdateOne) ExecX(ctx context.Context) {
+func (duo *DUpdateOne) ExecX(ctx context.Context) {
 	if err := duo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (duo *DynamicUpdateOne) defaults() error {
+func (duo *DUpdateOne) defaults() error {
 	return nil
 }
 
-func (duo *DynamicUpdateOne) sqlSave(ctx context.Context) (_node *Dynamic, err error) {
+func (duo *DUpdateOne) sqlSave(ctx context.Context) (_node *Dynamic, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   duo.mutation.table.Name,

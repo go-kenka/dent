@@ -24,8 +24,8 @@ const (
 	TypeDynamic = "Dynamic"
 )
 
-// DynamicMutation represents an operation that mutates the Dynamic nodes in the graph.
-type DynamicMutation struct {
+// DMutation represents an operation that mutates the Dynamic nodes in the graph.
+type DMutation struct {
 	table         *Table
 	op            Op
 	typ           string
@@ -34,17 +34,17 @@ type DynamicMutation struct {
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Dynamic, error)
-	predicates    []PredicateDynamic
+	predicates    []Predicate
 }
 
-var _ ent.Mutation = (*DynamicMutation)(nil)
+var _ ent.Mutation = (*DMutation)(nil)
 
-// dynamicOption allows management of the mutation configuration using functional options.
-type dynamicOption func(*DynamicMutation)
+// dOption allows management of the mutation configuration using functional options.
+type dOption func(*DMutation)
 
-// newDynamicMutation creates new mutation for the Dynamic entity.
-func newDynamicMutation(t *Table, op Op, opts ...dynamicOption) *DynamicMutation {
-	m := &DynamicMutation{
+// newDMutation creates new mutation for the Dynamic entity.
+func newDMutation(t *Table, op Op, opts ...dOption) *DMutation {
+	m := &DMutation{
 		table:         t,
 		op:            op,
 		typ:           TypeDynamic,
@@ -58,8 +58,8 @@ func newDynamicMutation(t *Table, op Op, opts ...dynamicOption) *DynamicMutation
 }
 
 // withID sets the ID field of the mutation.
-func withID(id int) dynamicOption {
-	return func(m *DynamicMutation) {
+func withID(id int) dOption {
+	return func(m *DMutation) {
 		var (
 			err   error
 			once  sync.Once
@@ -80,8 +80,8 @@ func withID(id int) dynamicOption {
 }
 
 // withEntity sets the old Dynamic of the mutation.
-func withEntity(node *Dynamic) dynamicOption {
-	return func(m *DynamicMutation) {
+func withEntity(node *Dynamic) dOption {
+	return func(m *DMutation) {
 		m.oldValue = func(context.Context) (*Dynamic, error) {
 			return node, nil
 		}
@@ -92,8 +92,8 @@ func withEntity(node *Dynamic) dynamicOption {
 }
 
 // withField sets the old Dynamic of the mutation.
-func withField(fields ...*schema.Column) dynamicOption {
-	return func(m *DynamicMutation) {
+func withField(fields ...*schema.Column) dOption {
+	return func(m *DMutation) {
 		for _, c := range fields {
 			if c.Name == FieldID {
 				continue
@@ -123,7 +123,7 @@ func withField(fields ...*schema.Column) dynamicOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m DynamicMutation) Client() *Client {
+func (m DMutation) Client() *Client {
 	client := &Client{config: m.table.config}
 	client.init()
 	return client
@@ -131,7 +131,7 @@ func (m DynamicMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m DynamicMutation) Tx() (*Tx, error) {
+func (m DMutation) Tx() (*Tx, error) {
 	if _, ok := m.table.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -142,13 +142,13 @@ func (m DynamicMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Access entities.
-func (m *DynamicMutation) SetID(id int) {
+func (m *DMutation) SetID(id int) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *DynamicMutation) ID() (id int, exists bool) {
+func (m *DMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -157,7 +157,7 @@ func (m *DynamicMutation) ID() (id int, exists bool) {
 
 // SetValue sets the value of the id field. Note that this
 // operation is only accepted on creation of Dynamic entities.
-func (m *DynamicMutation) SetValue(field string, val interface{}) {
+func (m *DMutation) SetValue(field string, val interface{}) {
 	if m.table.HasColumn(field) {
 		m.data[field] = &val
 	}
@@ -165,7 +165,7 @@ func (m *DynamicMutation) SetValue(field string, val interface{}) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *DynamicMutation) Value(field string) (id interface{}, exists bool) {
+func (m *DMutation) Value(field string) (id interface{}, exists bool) {
 	if _, ok := m.data[field]; !ok {
 		return
 	}
@@ -177,7 +177,7 @@ func (m *DynamicMutation) Value(field string) (id interface{}, exists bool) {
 // OldValue returns the old "field" field's value of the Dynamic entity.
 // If the Dynamic object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DynamicMutation) OldValue(ctx context.Context, field string) (v interface{}, err error) {
+func (m *DMutation) OldValue(ctx context.Context, field string) (v interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatorID is only allowed on UpdateOne operations")
 	}
@@ -192,18 +192,18 @@ func (m *DynamicMutation) OldValue(ctx context.Context, field string) (v interfa
 }
 
 // ClearEditorID clears the value of the "field" field.
-func (m *DynamicMutation) ClearValue(field string) {
+func (m *DMutation) ClearValue(field string) {
 	delete(m.data, field)
 	m.clearedFields[field] = struct{}{}
 }
 
 // ResetName resets all changes to the "field" field.
-func (m *DynamicMutation) ResetValue(field string) {
+func (m *DMutation) ResetValue(field string) {
 	delete(m.data, field)
 }
 
 // AddedValue returns the value that was added to the "field" field in this mutation.
-func (m *DynamicMutation) AddedValue(field string) (ent.Value, bool) {
+func (m *DMutation) AddedValue(field string) (ent.Value, bool) {
 	if col, ok := m.table.Column(field); ok {
 		if col.Type.Integer() {
 			v, ok := m.data[field]
@@ -218,7 +218,7 @@ func (m *DynamicMutation) AddedValue(field string) (ent.Value, bool) {
 }
 
 // AddValue returns the value that was added to the "field" field in this mutation.
-func (m *DynamicMutation) AddValue(name string, i int) {
+func (m *DMutation) AddValue(name string, i int) {
 	if col, ok := m.table.Column(name); ok {
 		if col.Type.Integer() {
 			v, ok := m.data[name]
@@ -231,32 +231,32 @@ func (m *DynamicMutation) AddValue(name string, i int) {
 	}
 }
 
-// Where appends a list predicates to the DynamicMutation builder.
-func (m *DynamicMutation) Where(ps ...PredicateDynamic) {
+// Where appends a list predicates to the DMutation builder.
+func (m *DMutation) Where(ps ...Predicate) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *DynamicMutation) Op() Op {
+func (m *DMutation) Op() Op {
 	return m.op
 }
 
 // Type returns the node type of this mutation (Dynamic).
-func (m *DynamicMutation) Type() string {
+func (m *DMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *DynamicMutation) Fields() []string {
+func (m *DMutation) Fields() []string {
 	return m.table.GetColumns()
 }
 
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *DynamicMutation) Field(name string) (ent.Value, bool) {
+func (m *DMutation) Field(name string) (ent.Value, bool) {
 	if m.table.HasColumn(name) {
 		return m.data[name], true
 	}
@@ -267,21 +267,21 @@ func (m *DynamicMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *DynamicMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *DMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	return m.OldValue(ctx, name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DynamicMutation) SetField(name string, value ent.Value) error {
+func (m *DMutation) SetField(name string, value ent.Value) error {
 	m.data[name] = value
 	return nil
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *DynamicMutation) AddedFields() []string {
+func (m *DMutation) AddedFields() []string {
 	var fields []string
 	for _, c := range m.table.Columns {
 		if c.Type.Integer() {
@@ -296,14 +296,14 @@ func (m *DynamicMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *DynamicMutation) AddedField(name string) (ent.Value, bool) {
+func (m *DMutation) AddedField(name string) (ent.Value, bool) {
 	return m.AddedValue(name)
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DynamicMutation) AddField(name string, value ent.Value) error {
+func (m *DMutation) AddField(name string, value ent.Value) error {
 
 	v, ok := value.(int)
 	if !ok {
@@ -316,7 +316,7 @@ func (m *DynamicMutation) AddField(name string, value ent.Value) error {
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *DynamicMutation) ClearedFields() []string {
+func (m *DMutation) ClearedFields() []string {
 	var fields []string
 	// if m.FieldCleared(dynamic.FieldCreatorID) {
 	// 	fields = append(fields, dynamic.FieldCreatorID)
@@ -329,69 +329,69 @@ func (m *DynamicMutation) ClearedFields() []string {
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *DynamicMutation) FieldCleared(name string) bool {
+func (m *DMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *DynamicMutation) ClearField(name string) error {
+func (m *DMutation) ClearField(name string) error {
 	m.ClearValue(name)
 	return nil
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *DynamicMutation) ResetField(name string) error {
+func (m *DMutation) ResetField(name string) error {
 	m.ResetValue(name)
 	return nil
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *DynamicMutation) AddedEdges() []string {
+func (m *DMutation) AddedEdges() []string {
 	edges := make([]string, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *DynamicMutation) AddedIDs(name string) []ent.Value {
+func (m *DMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *DynamicMutation) RemovedEdges() []string {
+func (m *DMutation) RemovedEdges() []string {
 	edges := make([]string, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *DynamicMutation) RemovedIDs(name string) []ent.Value {
+func (m *DMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *DynamicMutation) ClearedEdges() []string {
+func (m *DMutation) ClearedEdges() []string {
 	edges := make([]string, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *DynamicMutation) EdgeCleared(name string) bool {
+func (m *DMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *DynamicMutation) ClearEdge(name string) error {
+func (m *DMutation) ClearEdge(name string) error {
 	return fmt.Errorf("unknown Dynamic unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *DynamicMutation) ResetEdge(name string) error {
+func (m *DMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Dynamic edge %s", name)
 }

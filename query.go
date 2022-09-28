@@ -15,18 +15,18 @@ import (
 type WithQuery struct {
 	fromkey string
 	single  bool
-	query   *DynamicQuery
+	query   *DQuery
 }
 
-// DynamicQuery is the builder for querying Dynamic entities.
-type DynamicQuery struct {
+// DQuery is the builder for querying Dynamic entities.
+type DQuery struct {
 	limit  *int
 	offset *int
 	unique *bool
 	order  []OrderFunc
 	fields []string
 
-	predicates []PredicateDynamic
+	predicates []Predicate
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -36,40 +36,40 @@ type DynamicQuery struct {
 	table *Table
 }
 
-// Where adds a new predicate for the DynamicQuery builder.
-func (dq *DynamicQuery) Where(ps ...PredicateDynamic) *DynamicQuery {
+// Where adds a new predicate for the DQuery builder.
+func (dq *DQuery) Where(ps ...Predicate) *DQuery {
 	dq.predicates = append(dq.predicates, ps...)
 	return dq
 }
 
 // Limit adds a limit step to the query.
-func (dq *DynamicQuery) Limit(limit int) *DynamicQuery {
+func (dq *DQuery) Limit(limit int) *DQuery {
 	dq.limit = &limit
 	return dq
 }
 
 // Offset adds an offset step to the query.
-func (dq *DynamicQuery) Offset(offset int) *DynamicQuery {
+func (dq *DQuery) Offset(offset int) *DQuery {
 	dq.offset = &offset
 	return dq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (dq *DynamicQuery) Unique(unique bool) *DynamicQuery {
+func (dq *DQuery) Unique(unique bool) *DQuery {
 	dq.unique = &unique
 	return dq
 }
 
 // Order adds an order step to the query.
-func (dq *DynamicQuery) Order(o ...OrderFunc) *DynamicQuery {
+func (dq *DQuery) Order(o ...OrderFunc) *DQuery {
 	dq.order = append(dq.order, o...)
 	return dq
 }
 
 // First returns the first Dynamic entity from the query.
 // Returns a *NotFoundError when no Dynamic was found.
-func (dq *DynamicQuery) First(ctx context.Context) (*Dynamic, error) {
+func (dq *DQuery) First(ctx context.Context) (*Dynamic, error) {
 	nodes, err := dq.Limit(1).All(ctx)
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (dq *DynamicQuery) First(ctx context.Context) (*Dynamic, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (dq *DynamicQuery) FirstX(ctx context.Context) *Dynamic {
+func (dq *DQuery) FirstX(ctx context.Context) *Dynamic {
 	node, err := dq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -91,7 +91,7 @@ func (dq *DynamicQuery) FirstX(ctx context.Context) *Dynamic {
 
 // FirstID returns the first Dynamic ID from the query.
 // Returns a *NotFoundError when no Dynamic ID was found.
-func (dq *DynamicQuery) FirstID(ctx context.Context) (id int, err error) {
+func (dq *DQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = dq.Limit(1).IDs(ctx); err != nil {
 		return
@@ -104,7 +104,7 @@ func (dq *DynamicQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (dq *DynamicQuery) FirstIDX(ctx context.Context) int {
+func (dq *DQuery) FirstIDX(ctx context.Context) int {
 	id, err := dq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -115,7 +115,7 @@ func (dq *DynamicQuery) FirstIDX(ctx context.Context) int {
 // Only returns a single Dynamic entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one Dynamic entity is found.
 // Returns a *NotFoundError when no Dynamic entities are found.
-func (dq *DynamicQuery) Only(ctx context.Context) (*Dynamic, error) {
+func (dq *DQuery) Only(ctx context.Context) (*Dynamic, error) {
 	nodes, err := dq.Limit(2).All(ctx)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ func (dq *DynamicQuery) Only(ctx context.Context) (*Dynamic, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (dq *DynamicQuery) OnlyX(ctx context.Context) *Dynamic {
+func (dq *DQuery) OnlyX(ctx context.Context) *Dynamic {
 	node, err := dq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -142,7 +142,7 @@ func (dq *DynamicQuery) OnlyX(ctx context.Context) *Dynamic {
 // OnlyID is like Only, but returns the only Dynamic ID in the query.
 // Returns a *NotSingularError when more than one Dynamic ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (dq *DynamicQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (dq *DQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = dq.Limit(2).IDs(ctx); err != nil {
 		return
@@ -159,7 +159,7 @@ func (dq *DynamicQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (dq *DynamicQuery) OnlyIDX(ctx context.Context) int {
+func (dq *DQuery) OnlyIDX(ctx context.Context) int {
 	id, err := dq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -168,7 +168,7 @@ func (dq *DynamicQuery) OnlyIDX(ctx context.Context) int {
 }
 
 // All executes the query and returns a list of Dynamics.
-func (dq *DynamicQuery) All(ctx context.Context) ([]*Dynamic, error) {
+func (dq *DQuery) All(ctx context.Context) ([]*Dynamic, error) {
 	if err := dq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func (dq *DynamicQuery) All(ctx context.Context) ([]*Dynamic, error) {
 }
 
 // AllX is like All, but panics if an error occurs.
-func (dq *DynamicQuery) AllX(ctx context.Context) []*Dynamic {
+func (dq *DQuery) AllX(ctx context.Context) []*Dynamic {
 	nodes, err := dq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -185,7 +185,7 @@ func (dq *DynamicQuery) AllX(ctx context.Context) []*Dynamic {
 }
 
 // IDs executes the query and returns a list of Dynamic IDs.
-func (dq *DynamicQuery) IDs(ctx context.Context) ([]int, error) {
+func (dq *DQuery) IDs(ctx context.Context) ([]int, error) {
 	var ids []int
 	if err := dq.Select(FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
@@ -194,7 +194,7 @@ func (dq *DynamicQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (dq *DynamicQuery) IDsX(ctx context.Context) []int {
+func (dq *DQuery) IDsX(ctx context.Context) []int {
 	ids, err := dq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -203,7 +203,7 @@ func (dq *DynamicQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (dq *DynamicQuery) Count(ctx context.Context) (int, error) {
+func (dq *DQuery) Count(ctx context.Context) (int, error) {
 	if err := dq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -211,7 +211,7 @@ func (dq *DynamicQuery) Count(ctx context.Context) (int, error) {
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (dq *DynamicQuery) CountX(ctx context.Context) int {
+func (dq *DQuery) CountX(ctx context.Context) int {
 	count, err := dq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -220,7 +220,7 @@ func (dq *DynamicQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (dq *DynamicQuery) Exist(ctx context.Context) (bool, error) {
+func (dq *DQuery) Exist(ctx context.Context) (bool, error) {
 	if err := dq.prepareQuery(ctx); err != nil {
 		return false, err
 	}
@@ -228,7 +228,7 @@ func (dq *DynamicQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (dq *DynamicQuery) ExistX(ctx context.Context) bool {
+func (dq *DQuery) ExistX(ctx context.Context) bool {
 	exist, err := dq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -236,9 +236,9 @@ func (dq *DynamicQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the DynamicQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the DQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (dq *DynamicQuery) Clone() *DynamicQuery {
+func (dq *DQuery) Clone() *DQuery {
 	if dq == nil {
 		return nil
 	}
@@ -251,11 +251,11 @@ func (dq *DynamicQuery) Clone() *DynamicQuery {
 		}
 	}
 
-	return &DynamicQuery{
+	return &DQuery{
 		limit:      dq.limit,
 		offset:     dq.offset,
 		order:      append([]OrderFunc{}, dq.order...),
-		predicates: append([]PredicateDynamic{}, dq.predicates...),
+		predicates: append([]Predicate{}, dq.predicates...),
 		// clone intermediate query.
 		sql:      dq.sql.Clone(),
 		withData: withData,
@@ -268,8 +268,8 @@ func (dq *DynamicQuery) Clone() *DynamicQuery {
 // WithData 关联查询某个边的值，一对一关系
 // 通过当前数据的fromKey字段对应的ID的去查询对应的关联表中的值
 // 如查询用户的创建者
-func (dq *DynamicQuery) WithData(table, storeKey, fromKey string, opts ...func(*DynamicQuery)) *DynamicQuery {
-	query := &DynamicQuery{table: dq.table.client.Table(table), withData: make(map[string]*WithQuery)}
+func (dq *DQuery) WithData(table, storeKey, fromKey string, opts ...func(*DQuery)) *DQuery {
+	query := &DQuery{table: dq.table.client.Table(table), withData: make(map[string]*WithQuery)}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -284,8 +284,8 @@ func (dq *DynamicQuery) WithData(table, storeKey, fromKey string, opts ...func(*
 // WithListData 关联查询列表
 // 通过当前数据的ID去查询fromKey字段对应的ID的所有列表值
 // 如查询用户的角色列表
-func (dq *DynamicQuery) WithListData(table, storeKey, fromKey string, opts ...func(*DynamicQuery)) *DynamicQuery {
-	query := &DynamicQuery{table: dq.table.client.Table(table), withData: make(map[string]*WithQuery)}
+func (dq *DQuery) WithListData(table, storeKey, fromKey string, opts ...func(*DQuery)) *DQuery {
+	query := &DQuery{table: dq.table.client.Table(table), withData: make(map[string]*WithQuery)}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -311,7 +311,7 @@ func (dq *DynamicQuery) WithListData(table, storeKey, fromKey string, opts ...fu
 //		GroupBy(dynamic.FieldCreatorID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (dq *DynamicQuery) GroupBy(field string, fields ...string) *DynamicGroupBy {
+func (dq *DQuery) GroupBy(field string, fields ...string) *DynamicGroupBy {
 	grbuild := &DynamicGroupBy{table: dq.table}
 	grbuild.fields = append([]string{field}, fields...)
 	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
@@ -337,15 +337,15 @@ func (dq *DynamicQuery) GroupBy(field string, fields ...string) *DynamicGroupBy 
 //	client.Dynamic.Query().
 //		Select(dynamic.FieldCreatorID).
 //		Scan(ctx, &v)
-func (dq *DynamicQuery) Select(fields ...string) *DynamicSelect {
+func (dq *DQuery) Select(fields ...string) *DynamicSelect {
 	dq.fields = append(dq.fields, fields...)
-	selbuild := &DynamicSelect{DynamicQuery: dq}
+	selbuild := &DynamicSelect{DQuery: dq}
 	selbuild.label = dq.table.Name
 	selbuild.flds, selbuild.scan = &dq.fields, selbuild.Scan
 	return selbuild
 }
 
-func (dq *DynamicQuery) prepareQuery(ctx context.Context) error {
+func (dq *DQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range dq.fields {
 		if !dq.table.HasColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -361,7 +361,7 @@ func (dq *DynamicQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (dq *DynamicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Dynamic, error) {
+func (dq *DQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Dynamic, error) {
 	var (
 		nodes = []*Dynamic{}
 		_spec = dq.querySpec()
@@ -420,7 +420,7 @@ func (dq *DynamicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Dyna
 				nodeids[nodes[i].ID] = nodes[i]
 			}
 			query := dq2.query
-			query.Where(PredicateDynamic(func(s *sql.Selector) {
+			query.Where(Predicate(func(s *sql.Selector) {
 				s.Where(sql.InValues(dq2.fromkey, fks...))
 			}))
 			neighbors, err := query.All(ctx)
@@ -441,7 +441,7 @@ func (dq *DynamicQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Dyna
 	return nodes, nil
 }
 
-func (dq *DynamicQuery) sqlCount(ctx context.Context) (int, error) {
+func (dq *DQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := dq.querySpec()
 	_spec.Node.Columns = dq.fields
 	if len(dq.fields) > 0 {
@@ -450,7 +450,7 @@ func (dq *DynamicQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, dq.table.driver, _spec)
 }
 
-func (dq *DynamicQuery) sqlExist(ctx context.Context) (bool, error) {
+func (dq *DQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := dq.sqlCount(ctx)
 	if err != nil {
 		return false, fmt.Errorf("ent: check existence: %w", err)
@@ -458,7 +458,7 @@ func (dq *DynamicQuery) sqlExist(ctx context.Context) (bool, error) {
 	return n > 0, nil
 }
 
-func (dq *DynamicQuery) querySpec() *sqlgraph.QuerySpec {
+func (dq *DQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   dq.table.Name,
@@ -506,7 +506,7 @@ func (dq *DynamicQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (dq *DynamicQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (dq *DQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(dq.table.driver.Dialect())
 	t1 := builder.Table(dq.table.Name)
 	columns := dq.fields
@@ -605,7 +605,7 @@ func (dgb *DynamicGroupBy) sqlQuery() *sql.Selector {
 
 // DynamicSelect is the builder for selecting fields of Dynamic entities.
 type DynamicSelect struct {
-	*DynamicQuery
+	*DQuery
 	selector
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
@@ -616,7 +616,7 @@ func (ds *DynamicSelect) Scan(ctx context.Context, v interface{}) error {
 	if err := ds.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ds.sql = ds.DynamicQuery.sqlQuery(ctx)
+	ds.sql = ds.DQuery.sqlQuery(ctx)
 	return ds.sqlScan(ctx, v)
 }
 
